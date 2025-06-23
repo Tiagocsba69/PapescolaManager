@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import Professores from './components/Professores';
 import Turmas from './components/Turmas';
 import Contactos from './components/Contactos';
+import Relatorios from './components/Relatorios';
+import Configuracoes from './components/Configuracoes';
 import { Professor, Turma, Contacto } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 
@@ -178,18 +180,14 @@ const AppContent: React.FC = () => {
         return <Contactos professores={professores} />;
       case 'relatorios':
         return (
-          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Relatórios</h3>
-            <p className="text-gray-600">Módulo de relatórios será implementado em breve.</p>
-          </div>
+          <Relatorios 
+            professores={professores}
+            turmas={turmas}
+            contactos={contactos}
+          />
         );
       case 'configuracoes':
-        return (
-          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Configurações</h3>
-            <p className="text-gray-600">Módulo de configurações será implementado em breve.</p>
-          </div>
-        );
+        return <Configuracoes />;
       default:
         return (
           <Dashboard 
