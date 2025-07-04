@@ -25,7 +25,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPassword })
     const { error: signInError } = await signIn(formData.email, formData.password);
 
     if (signInError) {
-      setError(signInError.message);
+      // Provide a more user-friendly error message for invalid credentials
+      if (signInError.message === 'Invalid login credentials') {
+        setError('Credenciais inválidas. Verifique o seu email e palavra-passe, ou use "Esqueceu a palavra-passe?" para redefinir.');
+      } else {
+        setError(signInError.message);
+      }
     }
 
     setLoading(false);
