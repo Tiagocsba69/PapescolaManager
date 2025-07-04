@@ -11,11 +11,13 @@ import {
 } from 'lucide-react';
 import { Professor } from '../types';
 import { useSupabaseQuery, useSupabaseMutation } from '../hooks/useSupabase';
+import { useEmailNotifications } from '../hooks/useEmailNotifications';
 import ProfessorForm from './forms/ProfessorForm';
 
 const Professores: React.FC = () => {
   const { data: professores, loading, error, refetch } = useSupabaseQuery('professores');
   const { insert, update, remove, loading: mutationLoading } = useSupabaseMutation('professores');
+  const { notifyProfessorAdded } = useEmailNotifications();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -41,10 +43,17 @@ const Professores: React.FC = () => {
 
   const handleSave = async (professorData: Omit<Professor, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      let savedProfessor;
+      
       if (editingProfessor) {
-        await update(editingProfessor.id, professorData);
+        savedProfessor = await update(editingProfessor.id, professorData);
       } else {
-        await insert(professorData);
+        savedProfessor = await insert(professorData);
+        
+        // Enviar notificação por email para novo professor
+        if (savedProfessor) {
+          await notifyProfessorAdded(savedProfessor);
+        }
       }
       
       setShowModal(false);
