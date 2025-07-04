@@ -25,11 +25,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPassword })
     const { error: signInError } = await signIn(formData.email, formData.password);
 
     if (signInError) {
-      // Provide a more user-friendly error message for invalid credentials
-      if (signInError.message === 'Invalid login credentials') {
-        setError('Credenciais inválidas. Verifique o seu email e palavra-passe, ou use "Esqueceu a palavra-passe?" para redefinir.');
+      // Provide more user-friendly error messages
+      if (signInError.message.includes('Invalid login credentials')) {
+        setError('Credenciais inválidas. Verifique o seu email e palavra-passe, ou crie uma nova conta.');
+      } else if (signInError.message.includes('Email not confirmed')) {
+        setError('Email não confirmado. Verifique a sua caixa de entrada.');
+      } else if (signInError.message.includes('Too many requests')) {
+        setError('Muitas tentativas de login. Tente novamente em alguns minutos.');
       } else {
-        setError(signInError.message);
+        setError(`Erro de autenticação: ${signInError.message}`);
       }
     }
 
@@ -53,9 +57,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPassword })
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
-          <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
-          <p className="text-red-800 text-sm">{error}</p>
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
+          <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-red-800 text-sm">{error}</p>
+            {error.includes('Credenciais inválidas') && (
+              <p className="text-red-700 text-xs mt-1">
+                Dica: Se não tem conta, clique em "Criar conta" abaixo.
+              </p>
+            )}
+          </div>
         </div>
       )}
 
@@ -146,6 +157,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, onForgotPassword })
           </button>
         </p>
       </div>
+
+      {/* Informações de desenvolvimento */}
+      {import.meta.env.DEV && (
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h4 className="text-sm font-medium text-gray-900 mb-2">💡 Modo Desenvolvimento</h4>
+          <p className="text-xs text-gray-600 mb-2">
+            Para testar o sistema, pode criar uma nova conta ou usar dados de exemplo.
+          </p>
+          <p className="text-xs text-gray-500">
+            Certifique-se de que configurou as variáveis Supabase no arquivo .env
+          </p>
+        </div>
+      )}
     </div>
   );
 };
